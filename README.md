@@ -1,5 +1,5 @@
 #FQD#
-###this is a filesystem which want to achieve these function###
+###This is a filesystem which want to achieve these functions###
 >fast: means it can get data very fast from disks  
 
 >query: means it can find the data very aglie and be friendly with developers  
