@@ -6,3 +6,6 @@
 
 >distribute: means it can support for more than machines  
 
+
+this filesystem is Suitable for reading small files 
+
