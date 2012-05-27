@@ -90,11 +90,23 @@ int fqd_utime(const char *path, struct utimbuf *ubuf)
 
 int fqd_open(const char *path, struct fuse_file_info *fi)
 {
-
+    int retstat = 0;
+    int fd;
+    char fpath[PATH_MAX];
+    log_msg("\nfqd_open(path\"%s\",fi=0x%08x)\n",path,fi);
+    fqd_fullpath(fpath,path);
+    fd = open(fpath,fi->flags);
+    if(fd<0)
+        retstat = fqd_error("fqd_open open");
+    fi->fh = fd;
+    log_fi(fi);
+    return retstat;
 }
 
 int fqd_read(const char *path, char *buf, size_t size, off_t offset, struct fuse_file_info *fi)
 {
+    int retstat = 0;
+    log_msg
 
 }
 
