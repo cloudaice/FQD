@@ -219,7 +219,7 @@
     retstat = fqd_error("fqd_link link");
     return retstat;
     }
-//改变文件的quanxian
+//改变文件的权限
     int fqd_chmod(const char *path, mode_t mode)
     {
          int retstat = 0;
@@ -454,6 +454,5 @@
 
     int int main(int argc, const char *argv[])
     {
-        
         return 0;
     }
