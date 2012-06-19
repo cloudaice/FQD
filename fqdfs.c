@@ -15,12 +15,17 @@
 
 static int fqd_error(char *str)
 {
-
+    int ret = -errno;
+    log_msg("    ERROR %s: %s\n",str,strerror(errno));
+    return ret;
 }
 
 static void fqd_fullpath(char fpath[PATH_MAX], const char *path)
 {
-
+    strcpy(fpath, BB_DATA->rootdir);
+    strncat(fpath, path, PATH_MAX); 
+    log_msg("    fqd_fullpath:  rootdir = \"%s\", path = \"%s\", fpath = \"%s\"\n",
+	    BB_DATA->rootdir, path, fpath);
 }
 
 int fqd_getattr(const char *path, struct stat *statbuf)

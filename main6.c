@@ -1,15 +1,14 @@
 /*
   Big Brother File System
 
-Õâ¿ÉÒÔ±»³ÆÎªÒ»¸öno-opµÄÎÄ¼şÏµÍ³£ºËü²»Ç¿¼ÓÈÎºÎÆäËûÏÖÓĞµÄ½á¹¹ÉÏµÄÎÄ¼şÏµÍ³µÄÓïÒå¡£
-Ëü¼òµ¥µÄ±¨¸æÀ´µÄÇëÇó£¬²¢½«ËüÃÇ´«µİµ½µ×²ãµÄÎÄ¼şÏµÍ³¡£ĞÅÏ¢±£´æÔÚÒ»¸öÃûÎªÈÕÖ¾£¬
-ÔÚÄ¿Â¼bbfs.logÔËĞĞbbfsµÄ¡£
+è¿™å¯ä»¥è¢«ç§°ä¸ºä¸€ä¸ªno-opçš„æ–‡ä»¶ç³»ç»Ÿï¼šå®ƒä¸å¼ºåŠ ä»»ä½•å…¶ä»–ç°æœ‰çš„ç»“æ„ä¸Šçš„æ–‡ä»¶ç³»ç»Ÿçš„è¯­ä¹‰ã€‚
+å®ƒç®€å•çš„æŠ¥å‘Šæ¥çš„è¯·æ±‚ï¼Œå¹¶å°†å®ƒä»¬ä¼ é€’åˆ°åº•å±‚çš„æ–‡ä»¶ç³»ç»Ÿã€‚ä¿¡æ¯ä¿å­˜åœ¨ä¸€ä¸ªåä¸ºæ—¥å¿—ï¼Œ
+åœ¨ç›®å½•bbfs.logè¿è¡Œbbfsçš„ã€‚
 
   gcc -Wall `pkg-config fuse --cflags --libs` -o bbfs bbfs.c
  */
 
 #include "params.h"
-
 #include <ctype.h>
 #include <dirent.h>
 #include <errno.h>
@@ -26,7 +25,7 @@
 
 #include "log.h"
 
-// °Ñ´íÎó±¨¸øÈÕÖ¾ÎÄ¼ş£¬½«-errno¸³Öµ¸øcaller
+// æŠŠé”™è¯¯æŠ¥ç»™æ—¥å¿—æ–‡ä»¶ï¼Œå°†-errnoèµ‹å€¼ç»™caller
 
 static int bb_error(char *str) {
     int ret = -errno;
@@ -36,15 +35,15 @@ static int bb_error(char *str) {
     return ret;
 }
 
-//¼ì²éÊÚÈ¨ÓÃ»§ÊÇ·ñ±»ÔÊĞí×ö¸ø¶¨µÄ²Ù×÷
+//æ£€æŸ¥æˆæƒç”¨æˆ·æ˜¯å¦è¢«å…è®¸åšç»™å®šçš„æ“ä½œ
 
-//  ÎÒ¿´µ½µÄËùÓĞµÄÂ·¾¶ÊÇÏà¶Ô°²×°µÄ¸ùÎÄ¼şÏµÍ³¡£ÎªÁËµÃµ½µ×²ãµÄÎÄ¼şÏµÍ³£¬ÎÒĞèÒª
-// ¹ÒÔØµã¡£ÎÒ½«Ëü±£´æÔÚmain£¨£©£¬È»ºóÃ¿µ±ÎÒĞèÒªÑ°ÕÒÄ³¶«Î÷Â·¾¶£¬ÎÒ»áÕÒµ½¸øÕâ¸ö¹ÒÔØµãÈ¥
-//¹¹ÔìËü
+//  æˆ‘çœ‹åˆ°çš„æ‰€æœ‰çš„è·¯å¾„æ˜¯ç›¸å¯¹å®‰è£…çš„æ ¹æ–‡ä»¶ç³»ç»Ÿã€‚ä¸ºäº†å¾—åˆ°åº•å±‚çš„æ–‡ä»¶ç³»ç»Ÿï¼Œæˆ‘éœ€è¦
+// æŒ‚è½½ç‚¹ã€‚æˆ‘å°†å®ƒä¿å­˜åœ¨mainï¼ˆï¼‰ï¼Œç„¶åæ¯å½“æˆ‘éœ€è¦å¯»æ‰¾æŸä¸œè¥¿è·¯å¾„ï¼Œæˆ‘ä¼šæ‰¾åˆ°ç»™è¿™ä¸ªæŒ‚è½½ç‚¹å»
+//æ„é€ å®ƒ
 
 static void fqd_fullpath(char fpath[PATH_MAX], const char *path) {
     strcpy(fpath, BB_DATA->rootdir);
-    strncat(fpath, path, PATH_MAX); // Õâ¸öº¯ÊıÊÇÓĞÈ±ÏİµÄ£¬Èç¹ûÂ·¾¶¹ı³¤½«»á³ö´í
+    strncat(fpath, path, PATH_MAX); // è¿™ä¸ªå‡½æ•°æ˜¯æœ‰ç¼ºé™·çš„ï¼Œå¦‚æœè·¯å¾„è¿‡é•¿å°†ä¼šå‡ºé”™
 
     log_msg("    bb_fullpath:  rootdir = \"%s\", path = \"%s\", fpath = \"%s\"\n",
             BB_DATA->rootdir, path, fpath);
@@ -52,13 +51,13 @@ static void fqd_fullpath(char fpath[PATH_MAX], const char *path) {
 
 ///////////////////////////////////////////////////////////
 //
-// ËùÓĞµäĞÍµÄº¯ÊıºÍÆäCÓïÑÔµÄÆÀ¼Û±£´æÔÚ/usr/include/fuse.h
+// æ‰€æœ‰å…¸å‹çš„å‡½æ•°å’Œå…¶Cè¯­è¨€çš„è¯„ä»·ä¿å­˜åœ¨/usr/include/fuse.h
 //
 
-/** ºÃÅ¶µÄÎÄ¼şÊôĞÔ
+/** å¥½å“¦çš„æ–‡ä»¶å±æ€§
  *
- * ÀàËÆÓÚStat()º¯Êı£¬'st_dev' ºÍ 'st_blksize'ÎÄ¼şÊ±±»ºöÊÓµÄ£¬ ³ı·Ç'use_ino'¹ÒÔØ¸ø³ö£¬
- * ·ñÔò'st_ino'ÊÇ±»ºöÂÔµÄ¡£
+ * ç±»ä¼¼äºStat()å‡½æ•°ï¼Œ'st_dev' å’Œ 'st_blksize'æ–‡ä»¶æ—¶è¢«å¿½è§†çš„ï¼Œ é™¤é'use_ino'æŒ‚è½½ç»™å‡ºï¼Œ
+ * å¦åˆ™'st_ino'æ˜¯è¢«å¿½ç•¥çš„ã€‚
  */
 int fqd_getattr(const char *path, struct stat *statbuf) {
     int retstat = 0;
@@ -77,17 +76,17 @@ int fqd_getattr(const char *path, struct stat *statbuf) {
     return retstat;
 }
 
-/** ¶ÁÒ»¸ö·ûºÅÁ´½ÓµÄÄ¿±ê
+/** è¯»ä¸€ä¸ªç¬¦å·é“¾æ¥çš„ç›®æ ‡
  *
- * »º³åÇøÓ¦³äÂúÒ»¸ö¿Õ½áÊøµÄ×Ö·û´®¡£
- * »º³åÇøµÄ´óĞ¡²ÎÊı°üÀ¨ÖÕÖ¹µÄ¿Õ¼ä¿Õ×Ö·û¡£
- * Èç¹ûlinknameÊÇÌ«³¤£¬²»Æ¥ÅäÔÚ»º³åÇø£¬ËüÓ¦¸Ã±»½Ø¶Ï¡£
- * Èç¹û³É¹¦·µ»ØÖµÓ¦¸ÃÊÇ0¡£
+ * ç¼“å†²åŒºåº”å……æ»¡ä¸€ä¸ªç©ºç»“æŸçš„å­—ç¬¦ä¸²ã€‚
+ * ç¼“å†²åŒºçš„å¤§å°å‚æ•°åŒ…æ‹¬ç»ˆæ­¢çš„ç©ºé—´ç©ºå­—ç¬¦ã€‚
+ * å¦‚æœlinknameæ˜¯å¤ªé•¿ï¼Œä¸åŒ¹é…åœ¨ç¼“å†²åŒºï¼Œå®ƒåº”è¯¥è¢«æˆªæ–­ã€‚
+ * å¦‚æœæˆåŠŸè¿”å›å€¼åº”è¯¥æ˜¯0ã€‚
  */
 
 /*
-¿¼ÂÇµ½ÏµÍ³readlink£¨£©ÏµÍ³½«½Ø¶Ï²¢ÇÒÊ§È¥ÖÕ½áµÄ¿Õ×Ö·û¡£Òò´Ë£¬
- ´«µİµ½readlink£¨£©ÏµÍ³µÄ´óĞ¡±ØĞëĞ¡ÓÚ´«µİµ½bb_readlink£¨£©¡£
+è€ƒè™‘åˆ°ç³»ç»Ÿreadlinkï¼ˆï¼‰ç³»ç»Ÿå°†æˆªæ–­å¹¶ä¸”å¤±å»ç»ˆç»“çš„ç©ºå­—ç¬¦ã€‚å› æ­¤ï¼Œ
+ ä¼ é€’åˆ°readlinkï¼ˆï¼‰ç³»ç»Ÿçš„å¤§å°å¿…é¡»å°äºä¼ é€’åˆ°bb_readlinkï¼ˆï¼‰ã€‚
 
  */
 int bb_readlink(const char *path, char *link, size_t size) {
@@ -109,10 +108,10 @@ int bb_readlink(const char *path, char *link, size_t size) {
     return retstat;
 }
 
-/** ´´½¨ÎÄ¼ş½Úµã
+/** åˆ›å»ºæ–‡ä»¶èŠ‚ç‚¹
  *
- * ÎÒÃÇÃ»ÓĞĞ´create£¨£©º¯Êı£¬ÕâÀïµÄmknod£¨£©½«´´½¨ËùÓĞ non-directoryºÍ
- *  non-symlink ½Úµã¡£
+ * æˆ‘ä»¬æ²¡æœ‰å†™createï¼ˆï¼‰å‡½æ•°ï¼Œè¿™é‡Œçš„mknodï¼ˆï¼‰å°†åˆ›å»ºæ‰€æœ‰ non-directoryå’Œ
+ *  non-symlink èŠ‚ç‚¹ã€‚
  */
 //
 
@@ -124,8 +123,8 @@ int fqd_mknod(const char *path, mode_t mode, dev_t dev) {
             path, mode, dev);
     fqd_fullpath(fpath, path);
 
-    //ÔÚLinuxÉÏ£¬Õâ¿ÉÄÜÖ»ÄÜÕâÃ´Ğ´¡°mknod(path, mode, rdev)¡±µ«ÊÇÕâÑù×ö¸ü±ãĞ¯
-    if (S_ISREG(mode)) { //ÊÇREGÀàĞÍ
+    //åœ¨Linuxä¸Šï¼Œè¿™å¯èƒ½åªèƒ½è¿™ä¹ˆå†™â€œmknod(path, mode, rdev)â€ä½†æ˜¯è¿™æ ·åšæ›´ä¾¿æº
+    if (S_ISREG(mode)) { //æ˜¯REGç±»å‹
         retstat = open(fpath, O_CREAT | O_EXCL | O_WRONLY, mode);
         if (retstat < 0)
             retstat = fqd_error("fqd_mknod open");
@@ -135,7 +134,7 @@ int fqd_mknod(const char *path, mode_t mode, dev_t dev) {
                 retstat = fqd_error("fqd_mknod close");
         }
     } else
-        if (S_ISFIFO(mode)) { //ÊÇfifoÀàĞÍ
+        if (S_ISFIFO(mode)) { //æ˜¯fifoç±»å‹
         retstat = mkfifo(fpath, mode);
         if (retstat < 0) {
             retstat = fqd_error("fqd_mknod mkfifo");
@@ -150,14 +149,14 @@ int fqd_mknod(const char *path, mode_t mode, dev_t dev) {
     return retstat;
 }
 
-/**´´½¨Ò»¸öÄ¿Â¼ */
+/**åˆ›å»ºä¸€ä¸ªç›®å½• */
 int fqd_mkdir(const char *path, mode_t mode) {
     int retstat = 0;
     char fpath[PATH_MAX];
 
     log_msg("\nbb_mkdir(path=\"%s\", mode=0%3o)\n",
             path, mode);
-    fqd_fullpath(fpath, path); //¼ÓÔØÂ·¾¶
+    fqd_fullpath(fpath, path); //åŠ è½½è·¯å¾„
 
     retstat = mkdir(fpath, mode);
     if (retstat < 0) {
@@ -166,7 +165,7 @@ int fqd_mkdir(const char *path, mode_t mode) {
     return retstat;
 }
 
-/** É¾³ıÎÄ¼ş */
+/** åˆ é™¤æ–‡ä»¶ */
 int fqd_unlink(const char *path) {
     int retstat = 0;
     char fpath[PATH_MAX];
@@ -175,15 +174,15 @@ int fqd_unlink(const char *path) {
             path);
     fqd_fullpath(fpath, path);
 
-    retstat = unlink(fpath); //É¾³ıÁ´½Ó
+    retstat = unlink(fpath); //åˆ é™¤é“¾æ¥
     if (retstat < 0) {
-        retstat = fqd_error("fqd_unlink unlink"); //´íÎó´¦Àí
+        retstat = fqd_error("fqd_unlink unlink"); //é”™è¯¯å¤„ç†
     }
 
     return retstat;
 }
 
-/** É¾³ıÄ¿Â¼*/
+/** åˆ é™¤ç›®å½•*/
 int fqd_rmdir(const char *path) {
     int retstat = 0;
     char fpath[PATH_MAX];
@@ -198,11 +197,11 @@ int fqd_rmdir(const char *path) {
 
     return retstat;
 }
-/**´´½¨Ò»¸ö·ûºÅÁ´½Ó */
+/**åˆ›å»ºä¸€ä¸ªç¬¦å·é“¾æ¥ */
 
-/* ÕâÀïµÄ²ÎÊıÊÇÓĞµã»ìÂÒ£¬µ«ÊÇ·ûºÏsymlink()ÏµÍ³µÄµ÷ÓÃ¡£
- *  ¡°Â·¾¶¡±ÊÇÆäÖĞµÄÁ¬½áµã£¬?¶ø¡°Á´½Ó¡±ÊÇÁ´½Ó±¾Éí¡£
- * Òò´Ë£¬ÎÒÃÇÒªÊ¹µÄÂ·¾¶²»¸Ä±ä£¬µ«²åÈëµ½°²×°Ä¿Â¼µÄÁ´½Ó¡£*/
+/* è¿™é‡Œçš„å‚æ•°æ˜¯æœ‰ç‚¹æ··ä¹±ï¼Œä½†æ˜¯ç¬¦åˆsymlink()ç³»ç»Ÿçš„è°ƒç”¨ã€‚
+ *  â€œè·¯å¾„â€æ˜¯å…¶ä¸­çš„è¿ç»“ç‚¹ï¼Œ?è€Œâ€œé“¾æ¥â€æ˜¯é“¾æ¥æœ¬èº«ã€‚
+ * å› æ­¤ï¼Œæˆ‘ä»¬è¦ä½¿çš„è·¯å¾„ä¸æ”¹å˜ï¼Œä½†æ’å…¥åˆ°å®‰è£…ç›®å½•çš„é“¾æ¥ã€‚*/
 
 int fqd_symlink(const char *path, const char *link) {
     int retstat = 0;
@@ -218,8 +217,8 @@ int fqd_symlink(const char *path, const char *link) {
 
     return retstat;
 }
-//ÖØÃüÃû
-//ĞÂ¾ÉÂ·¾¶¶¼ÊÇfsÏà¹ØµÄ
+//é‡å‘½å
+//æ–°æ—§è·¯å¾„éƒ½æ˜¯fsç›¸å…³çš„
 
 int fqd_rename(const char *path, const char *newpath) {
     int retstat = 0;
@@ -232,14 +231,14 @@ int fqd_rename(const char *path, const char *newpath) {
     fqd_fullpath(fpath, path);
 
 
-    retstat = rename(fpath, fnewpath); //°ÑĞÂµÄÃû¸³¸øretstat
+    retstat = rename(fpath, fnewpath); //æŠŠæ–°çš„åèµ‹ç»™retstat
     if (retstat < 0) {
         retstat = fqd_error("fqd_rename rename");
     }
     return retstat;
 }
 
-//´´½¨Ò»¸öÎÄ¼şµÄÓ²Á´½Ó
+//åˆ›å»ºä¸€ä¸ªæ–‡ä»¶çš„ç¡¬é“¾æ¥
 
 int fqd_link(const char *path, const char *newpath) {
     int retstat = 0;
@@ -256,7 +255,7 @@ int fqd_link(const char *path, const char *newpath) {
     }
     return retstat;
 }
-//¸Ä±äÎÄ¼şµÄÔÊĞí±êÖ¾Î»
+//æ”¹å˜æ–‡ä»¶çš„å…è®¸æ ‡å¿—ä½
 
 int fqd_chmod(const char *path, mode_t mode) {
     int retstat = 0;
@@ -273,7 +272,7 @@ int fqd_chmod(const char *path, mode_t mode) {
     return retstat;
 }
 
-//¸Ä±äÎÄ¼şµÄ×éºÍËùÊôÈË
+//æ”¹å˜æ–‡ä»¶çš„ç»„å’Œæ‰€å±äºº
 
 int fqd_chown(const char *path, uid_t uid, gid_t gid) {
     int retstat = 0;
@@ -283,14 +282,14 @@ int fqd_chown(const char *path, uid_t uid, gid_t gid) {
             path, uid, gid);
     fqd_fullpath(fpath, path);
 
-    retstat = chown(fpath, uid, gid); //¸Ä±ä
+    retstat = chown(fpath, uid, gid); //æ”¹å˜
     if (retstat < 0) {
         retstat = fqd_error("fqd_chown chown");
     }
     return retstat;
 }
 
-/** ¸Ä±äÎÄ¼ş´óĞ¡*/
+/** æ”¹å˜æ–‡ä»¶å¤§å°*/
 int fqd_truncate(const char *path, off_t newsize) {
     int retstat = 0;
     char fpath[PATH_MAX];
@@ -307,7 +306,7 @@ int fqd_truncate(const char *path, off_t newsize) {
 }
 
 
-//¸Ä±äÎÄ¼şÊ±¼ä
+//æ”¹å˜æ–‡ä»¶æ—¶é—´
 
 /* note -- I'll want to change this as soon as 2.6 is in debian testing */
 int fqd_utime(const char *path, struct utimbuf *ubuf) {
@@ -325,12 +324,12 @@ int fqd_utime(const char *path, struct utimbuf *ubuf) {
     return retstat;
 }
 
-/** ´ò¿ªÎÄ¼ş²Ù×÷
+/** æ‰“å¼€æ–‡ä»¶æ“ä½œ
  *
 
- * Ã»ÓĞ½Ø¶Ï±êÖ¾£¨Ê¹ÓÃO_CREAT£¬O_EXCLµÄ£¬O_TRUNC£©»á±»´«µİ¸øopen£¨£©¡£
- * Èç¹û²Ù×÷·ûÔÊĞí¸ø¸ø¶¨µÄ±êÖ¾Î»£¬ÔòÓ¦ÏÈ´ò¿ªÓ¦¸Ã¼ì²é¡£¿ÉÑ¡µÄopenÒ²¿ÉÄÜ·µ»Ø
- * ÈÎÒâÔÚÔÚfuse_file_info½á¹¹µÄ¾ä±ú£¬²¢ÇÒËü»á±»´«µİ¸øËùÓĞµÄÎÄ¼ş²Ù×÷¾ä±ú¡£
+ * æ²¡æœ‰æˆªæ–­æ ‡å¿—ï¼ˆä½¿ç”¨O_CREATï¼ŒO_EXCLçš„ï¼ŒO_TRUNCï¼‰ä¼šè¢«ä¼ é€’ç»™openï¼ˆï¼‰ã€‚
+ * å¦‚æœæ“ä½œç¬¦å…è®¸ç»™ç»™å®šçš„æ ‡å¿—ä½ï¼Œåˆ™åº”å…ˆæ‰“å¼€åº”è¯¥æ£€æŸ¥ã€‚å¯é€‰çš„openä¹Ÿå¯èƒ½è¿”å›
+ * ä»»æ„åœ¨åœ¨fuse_file_infoç»“æ„çš„å¥æŸ„ï¼Œå¹¶ä¸”å®ƒä¼šè¢«ä¼ é€’ç»™æ‰€æœ‰çš„æ–‡ä»¶æ“ä½œå¥æŸ„ã€‚
  *
  * Changed in version 2.2
  */
@@ -353,12 +352,12 @@ int fqd_open(const char *path, struct fuse_file_info *fi) {
     return retstat;
 }
 
-/** ´ÓÒ»¸ö´ò¿ªµÄÎÄ¼şÖĞ¶ÁÈ¡Êı¾İ
+/** ä»ä¸€ä¸ªæ‰“å¼€çš„æ–‡ä»¶ä¸­è¯»å–æ•°æ®
  *
 
- *¶Á²Ù×÷Ó¦¸Ã·µ»ØËùÇëÇóµÄ×Ö½ÚÊı£¬³ı·Ç³öÏÖ´íÎó£¬·ñÔòÆäÈ¡µÃ×Ö½Ú½«»á±»0´úÌæ£¬
- * ÓĞÒ»¸öÀıÍâ£¬'direct_io' Ö¸¶¨¹ÒÔØÑ¡Ïî£¬ÔÚÕâÖÖÇé¿öÏÂ£¬ÏµÍ³µ÷ÓÃµÄ·µ»ØÖµ
- * ½«»á·´Ó³µ½Õâ¸ö²Ù×÷µÄ·µ»ØÖµµ±ÖĞ
+ *è¯»æ“ä½œåº”è¯¥è¿”å›æ‰€è¯·æ±‚çš„å­—èŠ‚æ•°ï¼Œé™¤éå‡ºç°é”™è¯¯ï¼Œå¦åˆ™å…¶å–å¾—å­—èŠ‚å°†ä¼šè¢«0ä»£æ›¿ï¼Œ
+ * æœ‰ä¸€ä¸ªä¾‹å¤–ï¼Œ'direct_io' æŒ‡å®šæŒ‚è½½é€‰é¡¹ï¼Œåœ¨è¿™ç§æƒ…å†µä¸‹ï¼Œç³»ç»Ÿè°ƒç”¨çš„è¿”å›å€¼
+ * å°†ä¼šåæ˜ åˆ°è¿™ä¸ªæ“ä½œçš„è¿”å›å€¼å½“ä¸­
  *
  *
  */
@@ -369,7 +368,7 @@ int fqd_read(const char *path, char *buf, size_t size, off_t offset, struct fuse
 
     log_msg("\nbb_read(path=\"%s\", buf=0x%08x, size=%d, offset=%lld, fi=0x%08x)\n",
             path, buf, size, offset, fi);
-    //ÔÚÕâÖÖÇé¿öÏÂÎŞĞèµÃµ½fpath£¬ÒòÎªfi->fh²»ÔÙÂ·¾¶ÖĞ
+    //åœ¨è¿™ç§æƒ…å†µä¸‹æ— éœ€å¾—åˆ°fpathï¼Œå› ä¸ºfi->fhä¸å†è·¯å¾„ä¸­
     log_fi(fi);
 
     retstat = pread(fi->fh, buf, size, offset);
@@ -379,17 +378,17 @@ int fqd_read(const char *path, char *buf, size_t size, off_t offset, struct fuse
     return retstat;
 }
 
-/** Ïò´ò¿ªµÄÎÄ¼şÖĞĞ´Êı¾İ
+/** å‘æ‰“å¼€çš„æ–‡ä»¶ä¸­å†™æ•°æ®
  *
 
- *¶Á²Ù×÷Ó¦¸Ã·µ»ØËùÇëÇóµÄ×Ö½ÚÊı£¬³ı·Ç³öÏÖ´íÎó¡£ÓĞÒ»¸öÀıÍâ£¬'direct_io'
- * Ö¸¶¨¹ÒÔØÑ¡Ïî£¬ÔÚÕâÖÖÇé¿öÏÂ£¬ÏµÍ³µ÷ÓÃµÄ·µ»ØÖµ½«»á·´Ó³µ½Õâ¸ö
- * ²Ù×÷µÄ·µ»ØÖµµ±ÖĞ
+ *è¯»æ“ä½œåº”è¯¥è¿”å›æ‰€è¯·æ±‚çš„å­—èŠ‚æ•°ï¼Œé™¤éå‡ºç°é”™è¯¯ã€‚æœ‰ä¸€ä¸ªä¾‹å¤–ï¼Œ'direct_io'
+ * æŒ‡å®šæŒ‚è½½é€‰é¡¹ï¼Œåœ¨è¿™ç§æƒ…å†µä¸‹ï¼Œç³»ç»Ÿè°ƒç”¨çš„è¿”å›å€¼å°†ä¼šåæ˜ åˆ°è¿™ä¸ª
+ * æ“ä½œçš„è¿”å›å€¼å½“ä¸­
  *
  * Changed in version 2.2
  */
 
-//¶ÔÓÚread£¨£©¶øÑÔ£¬write£¨£©ÏµÍ³µ÷ÓÃµÄÎÄµµÊÇ²»Á¬ĞøµÄ¡£
+//å¯¹äºreadï¼ˆï¼‰è€Œè¨€ï¼Œwriteï¼ˆï¼‰ç³»ç»Ÿè°ƒç”¨çš„æ–‡æ¡£æ˜¯ä¸è¿ç»­çš„ã€‚
 
 int fqd_write(const char *path, const char *buf, size_t size, off_t offset,
         struct fuse_file_info *fi) {
@@ -398,7 +397,7 @@ int fqd_write(const char *path, const char *buf, size_t size, off_t offset,
     log_msg("\nbb_write(path=\"%s\", buf=0x%08x, size=%d, offset=%lld, fi=0x%08x)\n",
             path, buf, size, offset, fi
             );
-    // ÔÚÕâÖÖÇé¿öÏÂÎŞĞèµÃµ½fpath£¬ÒòÎªfi->fh²»ÔÙÂ·¾¶ÖĞ
+    // åœ¨è¿™ç§æƒ…å†µä¸‹æ— éœ€å¾—åˆ°fpathï¼Œå› ä¸ºfi->fhä¸å†è·¯å¾„ä¸­
     log_fi(fi);
 
     retstat = pwrite(fi->fh, buf, size, offset);
@@ -408,9 +407,9 @@ int fqd_write(const char *path, const char *buf, size_t size, off_t offset,
     return retstat;
 }
 
-/** »ñÈ¡ÎÄ¼şÏµÍ³µÄÍ³¼ÆÊı¾İ
+/** è·å–æ–‡ä»¶ç³»ç»Ÿçš„ç»Ÿè®¡æ•°æ®
  *
- * The 'f_frsize', 'f_favail', 'f_fsid' and 'f_flag' ±»ºöÊÓ
+ * The 'f_frsize', 'f_favail', 'f_fsid' and 'f_flag' è¢«å¿½è§†
  *
 
  */
@@ -422,7 +421,7 @@ int fqd_statfs(const char *path, struct statvfs *statv) {
             path, statv);
     fqd_fullpath(fpath, path);
 
-    // »ñµÃµ×²ãµÄÎÄ¼şÏµÍ³µÄÍ³¼Æ×ÊÁÏ
+    // è·å¾—åº•å±‚çš„æ–‡ä»¶ç³»ç»Ÿçš„ç»Ÿè®¡èµ„æ–™
     retstat = statvfs(fpath, statv);
     if (retstat < 0) {
         retstat = fqd_error("fqd_statfs statvfs");
@@ -432,25 +431,25 @@ int fqd_statfs(const char *path, struct statvfs *statv) {
     return retstat;
 }
 
-/**¿ÉÄÜË¢ĞÂ»º´æÊı¾İ
+/**å¯èƒ½åˆ·æ–°ç¼“å­˜æ•°æ®
  *
 
- * ×¢Òâ£ºÕâºÍfsync£¨£©²¢²»µÈ¼Û£¬Ëû²»ÄÜÍ¬²½Ò»¸öÔàÊı¾İ
+ * æ³¨æ„ï¼šè¿™å’Œfsyncï¼ˆï¼‰å¹¶ä¸ç­‰ä»·ï¼Œä»–ä¸èƒ½åŒæ­¥ä¸€ä¸ªè„æ•°æ®
  *
 
- * Ò»¸öÎÄ¼şÃèÊö·û¹Ø±ÕÊ±¾ÍÓ¦µ±µ÷ÓÃflush£¨£©£¬ËùÒÔÈç¹ûÒ»¸öÎÄ¼şÏµÍ³ÏëÒª
- * ·µ»ØÒ»¸öĞ´´íÎóµ½close()²¢ÇÒÎÄ¼ş»º´æÖĞÓĞÔàÊı¾İ£¬ÄÇÃ´close()¿ÉÒÔ±»
- * Ğ´»ØÊı¾İºÍ´íÎó£¬ÒòÎªºÜ¶àÓ¦ÓÃºöÂÔclose£¨£©´íÎó£¬ÕâµãºÜÓĞÓÃ
+ * ä¸€ä¸ªæ–‡ä»¶æè¿°ç¬¦å…³é—­æ—¶å°±åº”å½“è°ƒç”¨flushï¼ˆï¼‰ï¼Œæ‰€ä»¥å¦‚æœä¸€ä¸ªæ–‡ä»¶ç³»ç»Ÿæƒ³è¦
+ * è¿”å›ä¸€ä¸ªå†™é”™è¯¯åˆ°close()å¹¶ä¸”æ–‡ä»¶ç¼“å­˜ä¸­æœ‰è„æ•°æ®ï¼Œé‚£ä¹ˆclose()å¯ä»¥è¢«
+ * å†™å›æ•°æ®å’Œé”™è¯¯ï¼Œå› ä¸ºå¾ˆå¤šåº”ç”¨å¿½ç•¥closeï¼ˆï¼‰é”™è¯¯ï¼Œè¿™ç‚¹å¾ˆæœ‰ç”¨
  *
 
  *
- * ×¢Òâ£ºÒ»¸öÎÄ¼ş±»´ò¿ªºó£¬flush£¨£©¿ÉÄÜ±»µ÷ÓÃ¶à´Î£¬Èç¹ûÎÄ¼şÃèÊö·û¶ÔÓ¦ÓÚ
- * dup(), dup2() or fork()µ÷ÓÃ£¬ÒÔÉÏÇé¿ö¾Í¿ÉÄÜ·¢Éú¡£²»Ì«¿ÉÄÜÈ·¶¨ÊÇ·ñÒ»¸ö
- * fluse£¨£©ÊÇ×îºóÒ»¸ö£¬ËùÒÔ£¬Ã¿¸öflush£¨£©Òò¸Ã±»Æ½µÈ¶Ô´ı¡£¶àĞ´Ë¢ĞÂĞòÁĞ
- * Ïà¶Ô¶øÑÔ³öÏÖµÄ±È½ÏÉÙ£¬ËùÒÔ¹¹²»³ÉÎÊÌâ¡£
+ * æ³¨æ„ï¼šä¸€ä¸ªæ–‡ä»¶è¢«æ‰“å¼€åï¼Œflushï¼ˆï¼‰å¯èƒ½è¢«è°ƒç”¨å¤šæ¬¡ï¼Œå¦‚æœæ–‡ä»¶æè¿°ç¬¦å¯¹åº”äº
+ * dup(), dup2() or fork()è°ƒç”¨ï¼Œä»¥ä¸Šæƒ…å†µå°±å¯èƒ½å‘ç”Ÿã€‚ä¸å¤ªå¯èƒ½ç¡®å®šæ˜¯å¦ä¸€ä¸ª
+ * fluseï¼ˆï¼‰æ˜¯æœ€åä¸€ä¸ªï¼Œæ‰€ä»¥ï¼Œæ¯ä¸ªflushï¼ˆï¼‰å› è¯¥è¢«å¹³ç­‰å¯¹å¾…ã€‚å¤šå†™åˆ·æ–°åºåˆ—
+ * ç›¸å¯¹è€Œè¨€å‡ºç°çš„æ¯”è¾ƒå°‘ï¼Œæ‰€ä»¥æ„ä¸æˆé—®é¢˜ã€‚
  *
 
- * ÎÄ¼şÏµÍ³²»ÄÜ¼ÙÉèĞ´ºóÒ»¶¨»áµ÷ÓÃflush¡£
+ * æ–‡ä»¶ç³»ç»Ÿä¸èƒ½å‡è®¾å†™åä¸€å®šä¼šè°ƒç”¨flushã€‚
  *
 
  */
@@ -458,21 +457,21 @@ int fqd_flush(const char *path, struct fuse_file_info *fi) {
     int retstat = 0;
 
     log_msg("\nbb_flush(path=\"%s\", fi=0x%08x)\n", path, fi);
-    // ÔÚÕâÖÖÇé¿öÏÂÎŞĞèµÃµ½fpath£¬ÒòÎªfi->fh²»ÔÙÂ·¾¶ÖĞ
+    // åœ¨è¿™ç§æƒ…å†µä¸‹æ— éœ€å¾—åˆ°fpathï¼Œå› ä¸ºfi->fhä¸å†è·¯å¾„ä¸­
     log_fi(fi);
 
     return retstat;
 }
 
-/** ÊÍ·ÅÒ»¸ö´ò¿ªµÄÎÄ¼ş
+/** é‡Šæ”¾ä¸€ä¸ªæ‰“å¼€çš„æ–‡ä»¶
  *
 
- * Èç¹û¶ÔÒ»¸ö´ò¿ªµÄÎÄ¼şÃ»ÓĞÒıÓÃµÄ»°¾ÍÊÍ·ÅµôÕâ¸öÎÄ¼ş£¬ËùÓĞµÄÎÄ¼şÃèÊö·ûºÍÓ³Éä
- * ±»¹Ø±Õ
+ * å¦‚æœå¯¹ä¸€ä¸ªæ‰“å¼€çš„æ–‡ä»¶æ²¡æœ‰å¼•ç”¨çš„è¯å°±é‡Šæ”¾æ‰è¿™ä¸ªæ–‡ä»¶ï¼Œæ‰€æœ‰çš„æ–‡ä»¶æè¿°ç¬¦å’Œæ˜ å°„
+ * è¢«å…³é—­
  *
- *¶ÔÓÚÃ¿¸öopen£¨£©µ÷ÓÃ£¬½«»á¶ÔÓ¦ÓÚÒ»¸örelease()²Ù×÷£¬ÓĞ¿ÉÄÜÒ»¸öÎÄ¼ş
- * ±»´ò¿ª³¬¹ıÒ»´Î£¬ÕâÑùµÄ»°Ö»ÓĞ×îºóµÄÄÇ¸öÊÍ·Å²ÅÓĞĞ§£¬ÊÍ·Åºó½«Ã»ÓĞ¶ÔÎÄ
- * ¼şµÄ¶ÁĞ´²Ù×÷¡£ÊÍ·ÅµÄ·µ»ØÖµ½«±»ºöÂÔ¡£
+ *å¯¹äºæ¯ä¸ªopenï¼ˆï¼‰è°ƒç”¨ï¼Œå°†ä¼šå¯¹åº”äºä¸€ä¸ªrelease()æ“ä½œï¼Œæœ‰å¯èƒ½ä¸€ä¸ªæ–‡ä»¶
+ * è¢«æ‰“å¼€è¶…è¿‡ä¸€æ¬¡ï¼Œè¿™æ ·çš„è¯åªæœ‰æœ€åçš„é‚£ä¸ªé‡Šæ”¾æ‰æœ‰æ•ˆï¼Œé‡Šæ”¾åå°†æ²¡æœ‰å¯¹æ–‡
+ * ä»¶çš„è¯»å†™æ“ä½œã€‚é‡Šæ”¾çš„è¿”å›å€¼å°†è¢«å¿½ç•¥ã€‚
  * 
  */
 int fqd_release(const char *path, struct fuse_file_info *fi) {
@@ -483,15 +482,15 @@ int fqd_release(const char *path, struct fuse_file_info *fi) {
     log_fi(fi);
 
 
-    //ÎÄ¼şĞèÒª±»¹Ø±Õ£¬Èç¹ûÎÒÃÇĞèÒªÒ»Ğ©×ÊÔ´µÄ»°£¬ÎÒÃÇ×îºÃÔÚÕâÀï¾Í¹Ø±ÕÎÄ¼ş
+    //æ–‡ä»¶éœ€è¦è¢«å…³é—­ï¼Œå¦‚æœæˆ‘ä»¬éœ€è¦ä¸€äº›èµ„æºçš„è¯ï¼Œæˆ‘ä»¬æœ€å¥½åœ¨è¿™é‡Œå°±å…³é—­æ–‡ä»¶
     retstat = close(fi->fh);
 
     return retstat;
 }
 
-/** Í¬²½ÎÄ¼şµÄÄÚÈİ
+/** åŒæ­¥æ–‡ä»¶çš„å†…å®¹
  *
- * Èç¹ûdatasync²ÎÊıÊÇ·ÇÁã£¬ÄÇÃ´Ö»ÓĞÓÃ»§Êı¾İÓ¦¸Ã±»Ë¢ĞÂ£¬¶øÔªÊı¾İ²»ÓÃ±»Ë¢ĞÂ¡£
+ * å¦‚æœdatasyncå‚æ•°æ˜¯éé›¶ï¼Œé‚£ä¹ˆåªæœ‰ç”¨æˆ·æ•°æ®åº”è¯¥è¢«åˆ·æ–°ï¼Œè€Œå…ƒæ•°æ®ä¸ç”¨è¢«åˆ·æ–°ã€‚
  *
  * Changed in version 2.2
  */
@@ -513,7 +512,7 @@ int fqd_fsync(const char *path, int datasync, struct fuse_file_info *fi) {
     return retstat;
 }
 
-/** ÉèÖÃÀ©Õ¹ÊôĞÔ */
+/** è®¾ç½®æ‰©å±•å±æ€§ */
 int fqd_setxattr(const char *path, const char *name, const char *value, size_t size, int flags) {
     int retstat = 0;
     char fpath[PATH_MAX];
@@ -529,7 +528,7 @@ int fqd_setxattr(const char *path, const char *name, const char *value, size_t s
     return retstat;
 }
 
-/** »ñÈ¡À©Õ¹ÊôĞÔ*/
+/** è·å–æ‰©å±•å±æ€§*/
 int fqd_getxattr(const char *path, const char *name, char *value, size_t size) {
     int retstat = 0;
     char fpath[PATH_MAX];
@@ -547,7 +546,7 @@ int fqd_getxattr(const char *path, const char *name, char *value, size_t size) {
     return retstat;
 }
 
-/** ÁĞ³öÀ©Õ¹ÊôĞÔ */
+/** åˆ—å‡ºæ‰©å±•å±æ€§ */
 int fqd_listxattr(const char *path, char *list, size_t size) {
     int retstat = 0;
     char fpath[PATH_MAX];
