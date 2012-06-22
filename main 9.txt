@@ -1,0 +1,36 @@
+/**
+
+ * 清除文件系统
+ *调用文献系统退出函数
+
+ */
+void fqd_destroy(void *userdata)
+{
+    log_msg("\nbb_destroy(userdata=0x%08x)\n", userdata);
+}
+
+/**
+
+ *检查文件进入许可
+ * 这将要求接入（）系统调用。
+ * 如果“default_permissions”挂载选项，
+ * 这种方法不会被调用。
+ *
+
+ */
+int fqd_access(const char *path, int mask)
+{
+    int retstat = 0;
+    char fpath[PATH_MAX];
+   
+    log_msg("\nfqd_access(path=\"%s\", mask=0%o)\n",
+	    path, mask);
+    fqd_fullpath(fpath, path);
+    
+    retstat = access(fpath, mask);
+    
+    if (retstat < 0){
+	retstat = fqd_error("fqd_access access");
+}
+    return retstat;
+}
