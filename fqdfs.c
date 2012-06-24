@@ -1,6 +1,10 @@
 /*
-
+ * fqdfs是一个基于用户态的文件系统，这是基于fuse用户态的文件系统
+ *没有进行现有的结构上的文件系统定义，只是简单地将请求传递到底层的文件系统，
+ 并且把操作日志信息打印到fqd.log文件当中
 */
+
+#include "params.h"
 #include <ctype.h>
 #include <errno.h>
 #include <fuse.h>
@@ -13,9 +17,11 @@
 #include <sys/xattr.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <log.h>
+#include <dirent.h>
 
-// 把错误报给日志文件
+#include "log.h"
+
+// 写入错误到日志文件
 static int fqd_error(char *str)
 {
     int ret = -errno;
@@ -27,19 +33,19 @@ static int fqd_error(char *str)
    我看到的所有的路径是相对安装的根文件系统。为了得到底层的文件系统，我需要
    挂载点。我将它保存在main（），然后每当我需要寻找某东西路径，我会找到给这个挂载点去
    构造它
-   */
+*/
 static void fqd_fullpath(char fpath[PATH_MAX], const char *path)
 {
     strcpy(fpath, BB_DATA->rootdir);
     strncat(fpath, path, PATH_MAX); 
-    log_msg("    fqd_fullpath:  rootdir = \"%s\", path = \"%s\", fpath = \"%s\"\n",
-            BB_DATA->rootdir, path, fpath);
+    log_msg("    fqd_fullpath:  rootdir = \"%s\", path = \"%s\", fpath = \"%s\"\n",BB_DATA->rootdir, path, fpath);
 }
 
 /*
    类似于Stat()函数，'st_dev' 和 'st_blksize'文件时被忽视的， 除非'use_ino'挂载给出，
    否则'st_ino'是被忽略的。
-   */
+*/
+
 int fqd_getattr(const char *path, struct stat *statbuf)
 {
     int retstat = 0;
@@ -509,8 +515,8 @@ int fqd_opendir(const char *path, struct fuse_file_info *fi)
     log_fi(fi);
 
     return retstat;
-
 }
+
 
 int fqd_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset,struct fuse_file_info *fi)
 {
@@ -543,9 +549,7 @@ int fqd_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offse
             return -ENOMEM;
         }
     } while ((de = readdir(dp)) != NULL);
-
     log_fi(fi);
-
     return retstat;
 }
 
@@ -607,28 +611,23 @@ int fqd_create(const char *path, mode_t mode, struct fuse_file_info *fi)
         retstat = fqd_error("fqd_create creat");
     fi->fh = fd;
     log_fi(fi);
-
     return retstat;
 }
 
 int fqd_ftruncate(const char *path, off_t offset, struct fuse_file_info *fi)
 {
     int retstat = 0;
-
     log_msg("\nfqd_ftruncate(path=\"%s\", offset=%lld, fi=0x%08x)\n",path, offset, fi);
     log_fi(fi);
-
     retstat = ftruncate(fi->fh, offset);
     if (retstat < 0)
         retstat = fqd_error("fqd_ftruncate ftruncate");
-
     return retstat;
 }
 
 int fqd_fgetattr(const char *path, struct stat *statbuf, struct fuse_file_info *fi)
 {
     int retstat = 0;
-
     log_msg("\nfqd_fgetattr(path=\"%s\", statbuf=0x%08x, fi=0x%08x)\n",path, statbuf, fi);
     log_fi(fi);
     retstat = fstat(fi->fh, statbuf);
@@ -638,44 +637,76 @@ int fqd_fgetattr(const char *path, struct stat *statbuf, struct fuse_file_info *
     return retstat;
 }
 
-static struct fuse_operations fqd_oper = {
-    .getattr = fqd_getattr,
-    .readlink = fqd_readlink,
-    .getdir = NULL,
-    .mknod = fqd_mknod,
-    .mkdir = fqd_mkdir,
-    .rmdir = fqd_rmdir,
-    .symlink = fqd_symlink,
-    .rename = fqd_rename,
-    .link = fqd_link,
-    .chmod = fqd_chmod,
-    .chown = fqd_chown,
-    .truncate = fqd_truncate,
-    .utime = fqd_utime,
-    .open = fqd_open,
-    .read = fqd_read,
-    .write = fqd_write,
-    .statfs = fqd_statfs,
-    .flush = fqd_flush,
-    .release = fqd_release,
-    .fsync = fqd_fsync,
-    .setxattr = fqd_setxattr,
-    .getxattr = fqd_getxattr,
-    .listxattr = fqd_listxattr,
-    .removexattr = fqd_removexattr,
-    .opendir = fqd_opendir,
-    .readdir = fqd_readdir,
-    .releasedir = fqd_releasedir,
-    .fsyncdir = fqd_fsncdir,
-    .init = fqd_init,
-    .destroy  = fqd_destroy,
-    .access = fqd_access,
-    .create = fqd_create,
-    .ftruncate = fqd_ftruncate,
-    .fgetattr = fqd_fgetattr
+ struct fuse_operations fqd_oper = {
+    .getattr       = fqd_getattr,
+    .readlink      = fqd_readlink,
+    .getdir        = NULL,
+    .mknod         = fqd_mknod,
+    .mkdir         = fqd_mkdir,
+    .rmdir         = fqd_rmdir,
+    .symlink       = fqd_symlink,
+    .rename        = fqd_rename,
+    .link          = fqd_link,
+    .chmod         = fqd_chmod,
+    .chown         = fqd_chown,
+    .truncate      = fqd_truncate,
+    .utime         = fqd_utime,
+    .open          = fqd_open,
+    .read          = fqd_read,
+    .write         = fqd_write,
+    .statfs        = fqd_statfs,
+    .flush         = fqd_flush,
+    .release       = fqd_release,
+    .fsync         = fqd_fsync,
+    .setxattr      = fqd_setxattr,
+    .getxattr      = fqd_getxattr,
+    .listxattr     = fqd_listxattr,
+    .removexattr   = fqd_removexattr,
+    .opendir       = fqd_opendir,
+    .readdir       = fqd_readdir,
+    .releasedir    = fqd_releasedir,
+    .fsyncdir      = fqd_fsyncdir,
+    .init          = fqd_init,
+    .destroy       = fqd_destroy,
+    .access        = fqd_access,
+    .create        = fqd_create,
+    .ftruncate     = fqd_ftruncate,
+    .fgetattr      = fqd_fgetattr
 };
 
-int int main(int argc, const char *argv[])
+void bb_usage()
 {
-    return  fuse_main(argc,argv,&fqd_oper,NULL);
+    fprintf(stderr, "usage:  bbfs rootDir mountPoint\n");
+    abort();
+}
+
+int main(int argc,char *argv[])
+{
+    int i;
+    int fuse_stat;
+    struct bb_state *bb_data;
+    if((getuid()==0) || (geteuid() == 0))
+    {
+        fprintf(stderr,"Running fqdfs as root opens unnacceptable security holes\n");
+        return 1;
+    }
+    bb_data = calloc(sizeof(struct bb_state),1);
+    if (bb_data == NULL)
+    {
+        perror("main calloc");
+        abort();
+    }
+    bb_data->logfile = log_open();
+    for (i = 1; (i < argc) && (argv[i][0] == '-'); i++)
+	if (argv[i][1] == 'o') i++; 
+    if ((argc - i) != 2) bb_usage();
+
+    bb_data->rootdir = realpath(argv[i], NULL);
+
+    argv[i] = argv[i+1];
+    argc--;
+    fprintf(stderr, "about to call fuse_main\n");
+    fuse_stat = fuse_main(argc, argv, &fqd_oper,bb_data);
+    fprintf(stderr, "fuse_main returned %d\n", fuse_stat);
+    return fuse_stat;
 }
