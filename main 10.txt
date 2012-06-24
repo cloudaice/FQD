@@ -1,0 +1,20 @@
+
+/*
+ 改变一个打开的文件的大小
+ * 如果truncation（）在ftruncate（）文件系统中被调用的话
+ * 这种方法将被调用而不调用truncate（）。
+ */
+int fqd_ftruncate(const char *path, off_t offset, struct fuse_file_info *fi) {
+int retstat = 0;
+
+    log_msg("\nfqd_ftruncate(path=\"%s\", offset=%lld, fi=0x%08x)\n",
+	    path, offset, fi);
+    log_fi(fi);
+
+    retstat = ftruncate(fi->fh, offset);
+    if (retstat < 0){
+	retstat = fqd_error("fqd_ftruncate ftruncate");
+    }
+    return retstat;
+}
+
