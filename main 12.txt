@@ -1,0 +1,26 @@
+/*
+ 创建并打开一个文件
+ *
+ * 如果该文件不存在，先创建它与指定的模式，然后将其打开。
+ *
+ */
+int fqd_create(const char *path, mode_t mode, struct fuse_file_info *fi)
+{
+    int retstat = 0;
+    char fpath[PATH_MAX];
+    int fd;
+
+    log_msg("\nfqd_create(path=\"%s\", mode=0%03o, fi=0x%08x)\n",
+	    path, mode, fi);
+    fqd_fullpath(fpath, path);
+
+    fd = creat(fpath, mode);
+    if (fd < 0){
+	retstat = fqd_error("fqd_create creat");
+    }
+    fi->fh = fd;
+
+    log_fi(fi);
+
+    return retstat;
+}
