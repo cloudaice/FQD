@@ -629,6 +629,10 @@ int fqd_access(const char *path, int mask)
     return retstat;
 }
 
+/*
+* 创建并打开一个文件
+* 如果文件不存在，先创建它与指定的模式，然后将其打开。
+*/
 int fqd_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 {
     int retstat = 0;
@@ -646,6 +650,11 @@ int fqd_create(const char *path, mode_t mode, struct fuse_file_info *fi)
     return retstat;
 }
 
+/*
+ * 改变一个打开的文件的大小
+ * 在这里如果truncation（）在ftruncate（）文件系统中被调用的话
+ * 这个方法将被调用而不调用truncate（）。
+ */
 int fqd_ftruncate(const char *path, off_t offset, struct fuse_file_info *fi)
 {
     int retstat = 0;
@@ -657,6 +666,12 @@ int fqd_ftruncate(const char *path, off_t offset, struct fuse_file_info *fi)
     return retstat;
 }
 
+/**
+ * 从一个打开的文件中获得属性
+ * 如果文件信息可用的话，这个方法将被调用，而不会调用getattr（）。
+ * 目前为止，认为这个函数仅仅是在create（）函数后被调用。
+ */
+//考虑到目前这个函数仅仅在fqd_create()后面调用，所以我在这里只是用了fd而忽略路径
 int fqd_fgetattr(const char *path, struct stat *statbuf, struct fuse_file_info *fi)
 {
     int retstat = 0;
@@ -669,7 +684,7 @@ int fqd_fgetattr(const char *path, struct stat *statbuf, struct fuse_file_info *
     return retstat;
 }
 
- struct fuse_operations fqd_oper = {
+struct fuse_operations fqd_oper = {
     .getattr       = fqd_getattr,
     .readlink      = fqd_readlink,
     .getdir        = NULL,

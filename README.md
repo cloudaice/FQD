@@ -1,11 +1,5 @@
 #FQD#
-###This is a filesystem which want to achieve these functions###
->fast: means it can get data very fast from disks  
+###This is a filesystem which use fuse to implement###
+you can mount a file on another file and do file operations in it. then you can see log file which recored your Operations
 
->query: means it can find the data very aglie and be friendly with developers  
-
->distribute: means it can support for more than machines  
-
-
-this filesystem is Suitable for reading small files 
 
