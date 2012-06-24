@@ -1,0 +1,27 @@
+/**
+ * 从一个打开的文件中获得属性
+
+ * 如果文件信息可用的话，这个方法将被调用，而不会调用getattr（）。
+ *
+
+ *目前为止，这个函数仅仅是在create（）函数后被调用。
+ * 以后他可能在fstst（）后被调用。
+ */
+
+//考虑到目前这个函数仅仅在fqd_create()后面调用，所以我在这里只是用了fd而忽略路径
+int fqd_fgetattr(const char *path, struct stat *statbuf, struct fuse_file_info *fi)
+{
+    int retstat = 0;
+
+    log_msg("\n fqd_fgetattr(path=\"%s\", statbuf=0x%08x, fi=0x%08x)\n",
+	    path, statbuf, fi);
+    log_fi(fi);
+
+    retstat = fstat(fi->fh, statbuf);
+    if (retstat < 0){
+	retstat =  fqd_error(" fqd_fgetattr fstat");
+    }
+    log_stat(statbuf);
+
+    return retstat;
+}
