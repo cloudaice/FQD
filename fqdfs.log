@@ -17419,3 +17419,340 @@ fqd_getattr(path="/", statbuf=0xb6fdd1b0)
     st_atime = 0x4fe716c9
     st_mtime = 0x4fe716c9
     st_ctime = 0x4fe716c9
+
+fqd_getattr(path="/hello.c", statbuf=0xb78001d0)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/hello.c", fpath = "/home/cloudaice/FQD/rootdir/hello.c"
+    st_dev = 2057
+    st_ino = 2890213
+    st_mode = 0100644
+    st_nlink = 1
+    st_uid = 1000
+    st_gid = 1000
+    st_rdev = 0
+    st_size = 125
+    st_blksize = 4096
+    st_blocks = 8
+    st_atime = 0x4fe71987
+    st_mtime = 0x4fe7138d
+    st_ctime = 0x4fe7138d
+
+fqd_getattr(path="/hello.txt", statbuf=0xb67ba1d0)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/hello.txt", fpath = "/home/cloudaice/FQD/rootdir/hello.txt"
+    st_dev = 2057
+    st_ino = 2890212
+    st_mode = 0100644
+    st_nlink = 1
+    st_uid = 1000
+    st_gid = 1000
+    st_rdev = 0
+    st_size = 61
+    st_blksize = 4096
+    st_blocks = 8
+    st_atime = 0x4fe71987
+    st_mtime = 0x4fe716c9
+    st_ctime = 0x4fe716c9
+
+fqd_getattr(path="/hi.c", statbuf=0xb5f971d0)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/hi.c", fpath = "/home/cloudaice/FQD/rootdir/hi.c"
+    st_dev = 2057
+    st_ino = 2884320
+    st_mode = 0100644
+    st_nlink = 1
+    st_uid = 1000
+    st_gid = 1000
+    st_rdev = 0
+    st_size = 0
+    st_blksize = 4096
+    st_blocks = 0
+    st_atime = 0x4fe71682
+    st_mtime = 0x4fe71682
+    st_ctime = 0x4fe71682
+
+fqd_opendir(path="/", fi=0xb6fdd200)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/", fpath = "/home/cloudaice/FQD/rootdir/"
+    flags = 0x00098800
+    fh_old = 0x00000000
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x00000000080f5438
+    lock_owner = 0x0000000000000000
+
+fqd_readdir(path="/", buf=0x080f5160, filler=0x00bfab20, offset=0, fi=0xb78001d0)
+calling filler with name ..
+calling filler with name hi.c
+calling filler with name hello.c
+calling filler with name .
+calling filler with name hello.txt
+    flags = 0x00000000
+    fh_old = 0x080f5438
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x00000000080f5438
+    lock_owner = 0x0000000000000000
+
+fqd_getattr(path="/.gitignore", statbuf=0xb67ba1d0)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/.gitignore", fpath = "/home/cloudaice/FQD/rootdir/.gitignore"
+    ERROR fqd_getattr lstat: No such file or directory
+    st_dev = 0
+    st_ino = 0
+    st_mode = 00
+    st_nlink = 0
+    st_uid = 0
+    st_gid = 0
+    st_rdev = 0
+    st_size = 0
+    st_blksize = 0
+    st_blocks = 0
+    st_atime = 0x00000000
+    st_mtime = 0x00000000
+    st_ctime = 0x00000000
+
+fqd_releasedir(path="/", fi=0xb6fdd200)
+    flags = 0x00000000
+    fh_old = 0x080f5438
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x00000000080f5438
+    lock_owner = 0x0000000000000000
+
+fqd_getattr(path="/hello.c", statbuf=0xb78001d0)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/hello.c", fpath = "/home/cloudaice/FQD/rootdir/hello.c"
+    st_dev = 2057
+    st_ino = 2890213
+    st_mode = 0100644
+    st_nlink = 1
+    st_uid = 1000
+    st_gid = 1000
+    st_rdev = 0
+    st_size = 125
+    st_blksize = 4096
+    st_blocks = 8
+    st_atime = 0x4fe71987
+    st_mtime = 0x4fe7138d
+    st_ctime = 0x4fe7138d
+
+fqd_getattr(path="/hello.txt", statbuf=0xb67ba1d0)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/hello.txt", fpath = "/home/cloudaice/FQD/rootdir/hello.txt"
+    st_dev = 2057
+    st_ino = 2890212
+    st_mode = 0100644
+    st_nlink = 1
+    st_uid = 1000
+    st_gid = 1000
+    st_rdev = 0
+    st_size = 61
+    st_blksize = 4096
+    st_blocks = 8
+    st_atime = 0x4fe71987
+    st_mtime = 0x4fe716c9
+    st_ctime = 0x4fe716c9
+
+fqd_getattr(path="/hi.c", statbuf=0xb5f971d0)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/hi.c", fpath = "/home/cloudaice/FQD/rootdir/hi.c"
+    st_dev = 2057
+    st_ino = 2884320
+    st_mode = 0100644
+    st_nlink = 1
+    st_uid = 1000
+    st_gid = 1000
+    st_rdev = 0
+    st_size = 0
+    st_blksize = 4096
+    st_blocks = 0
+    st_atime = 0x4fe71682
+    st_mtime = 0x4fe71682
+    st_ctime = 0x4fe71682
+
+fqd_open(path"/hello.c",fi=0xb6fdd290)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/hello.c", fpath = "/home/cloudaice/FQD/rootdir/hello.c"
+    flags = 0x00008000
+    fh_old = 0x00000000
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x0000000000000005
+    lock_owner = 0x0000000000000000
+
+fqd_flush(path="/hello.c", fi=0xb7800280)
+    flags = 0x00000000
+    fh_old = 0x00000005
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x0000000000000005
+    lock_owner = 0xe51c1dc6462d05ec
+
+fqd_getattr(path="/.gitattributes", statbuf=0xb67ba1d0)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/.gitattributes", fpath = "/home/cloudaice/FQD/rootdir/.gitattributes"
+    ERROR fqd_getattr lstat: No such file or directory
+    st_dev = 0
+    st_ino = 0
+    st_mode = 00
+    st_nlink = 0
+    st_uid = 0
+    st_gid = 0
+    st_rdev = 0
+    st_size = 0
+    st_blksize = 0
+    st_blocks = 0
+    st_atime = 0x00000000
+    st_mtime = 0x00000000
+    st_ctime = 0x00000000
+
+fqd_read(path="/hello.c", buf=0x080f5330, size=4096, offset=0, fi=0xb5f97280)
+    flags = 0x00008000
+    fh_old = 0x00000005
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x0000000000000005
+    lock_owner = 0x0000000000000000
+
+fqd_release(path="/hello.c", fi=0xb7800280)
+    flags = 0x00008000
+    fh_old = 0x00000005
+    writepage = 0
+    direct_io = 0
+
+fqd_open(path"/hello.txt",fi=0xb6fdd290)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/hello.txt", fpath = "/home/cloudaice/FQD/rootdir/hello.txt"
+    keep_cache = 0
+    fh = 0x0000000000000005
+    lock_owner = 0x0000000000000000
+    flags = 0x00008000
+    fh_old = 0x00000000
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x0000000000000006
+    lock_owner = 0x0000000000000000
+
+fqd_flush(path="/hello.txt", fi=0xb67ba280)
+    flags = 0x00000000
+    fh_old = 0x00000006
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x0000000000000006
+    lock_owner = 0xe51c1dc6462d05ec
+
+fqd_read(path="/hello.txt", buf=0x080f5330, size=4096, offset=0, fi=0xb5f97280)
+    flags = 0x00008000
+    fh_old = 0x00000006
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x0000000000000006
+    lock_owner = 0x0000000000000000
+
+fqd_release(path="/hello.txt", fi=0xb7800280)
+    flags = 0x00008000
+    fh_old = 0x00000006
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x0000000000000006
+    lock_owner = 0x0000000000000000
+
+fqd_getattr(path="/hello.c", statbuf=0xb6fdd1d0)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/hello.c", fpath = "/home/cloudaice/FQD/rootdir/hello.c"
+    st_dev = 2057
+    st_ino = 2890213
+    st_mode = 0100644
+    st_nlink = 1
+    st_uid = 1000
+    st_gid = 1000
+    st_rdev = 0
+    st_size = 125
+    st_blksize = 4096
+    st_blocks = 8
+    st_atime = 0x4fe71987
+    st_mtime = 0x4fe7138d
+    st_ctime = 0x4fe7138d
+
+fqd_getattr(path="/hello.txt", statbuf=0xb67ba1d0)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/hello.txt", fpath = "/home/cloudaice/FQD/rootdir/hello.txt"
+    st_dev = 2057
+    st_ino = 2890212
+    st_mode = 0100644
+    st_nlink = 1
+    st_uid = 1000
+    st_gid = 1000
+    st_rdev = 0
+    st_size = 61
+    st_blksize = 4096
+    st_blocks = 8
+    st_atime = 0x4fe71987
+    st_mtime = 0x4fe716c9
+    st_ctime = 0x4fe716c9
+
+fqd_getattr(path="/hi.c", statbuf=0xb5f971d0)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/hi.c", fpath = "/home/cloudaice/FQD/rootdir/hi.c"
+    st_dev = 2057
+    st_ino = 2884320
+    st_mode = 0100644
+    st_nlink = 1
+    st_uid = 1000
+    st_gid = 1000
+    st_rdev = 0
+    st_size = 0
+    st_blksize = 4096
+    st_blocks = 0
+    st_atime = 0x4fe71682
+    st_mtime = 0x4fe71682
+    st_ctime = 0x4fe71682
+
+fqd_opendir(path="/", fi=0xb7800200)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/", fpath = "/home/cloudaice/FQD/rootdir/"
+    flags = 0x00098800
+    fh_old = 0x00000000
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x00000000080f5438
+    lock_owner = 0x0000000000000000
+
+fqd_readdir(path="/", buf=0x080f5160, filler=0x00bfab20, offset=0, fi=0xb6fdd1d0)
+calling filler with name ..
+calling filler with name hi.c
+calling filler with name hello.c
+calling filler with name .
+calling filler with name hello.txt
+    flags = 0x00000000
+    fh_old = 0x080f5438
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x00000000080f5438
+    lock_owner = 0x0000000000000000
+
+fqd_getattr(path="/.gitignore", statbuf=0xb67ba1d0)
+    fqd_fullpath:  rootdir = "/home/cloudaice/FQD/rootdir", path = "/.gitignore", fpath = "/home/cloudaice/FQD/rootdir/.gitignore"
+    ERROR fqd_getattr lstat: No such file or directory
+    st_dev = 0
+    st_ino = 0
+    st_mode = 00
+    st_nlink = 0
+    st_uid = 0
+    st_gid = 0
+    st_rdev = 0
+    st_size = 0
+    st_blksize = 0
+    st_blocks = 0
+    st_atime = 0x00000000
+    st_mtime = 0x00000000
+    st_ctime = 0x00000000
+
+fqd_releasedir(path="/", fi=0xb7800200)
+    flags = 0x00000000
+    fh_old = 0x080f5438
+    writepage = 0
+    direct_io = 0
+    keep_cache = 0
+    fh = 0x00000000080f5438
+    lock_owner = 0x0000000000000000
+
+fqd_destroy(userdata=0x080d8008)
