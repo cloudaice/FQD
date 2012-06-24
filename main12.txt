@@ -1,7 +1,7 @@
 /*
- ��������һ���ļ�
+ 创建并打开一个文件
  *
- * ������ļ������ڣ��ȴ�������ָ����ģʽ��Ȼ����򿪡�
+ * 如果该文件不存在，先创建它与指定的模式，然后将其打开。
  *
  */
 int fqd_create(const char *path, mode_t mode, struct fuse_file_info *fi)

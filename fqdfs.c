@@ -405,8 +405,6 @@ int fqd_release(const char *path, struct fuse_file_info *fi)
 /** 同步文件的内容
  *
  * 如果datasync参数是非零，那么只有用户数据应该被刷新，而元数据不用被刷新。
- *
- * Changed in version 2.2
  */
 int fqd_fsync(const char *path, int datasync, struct fuse_file_info *fi)
 {
@@ -481,6 +479,7 @@ int fqd_listxattr(const char *path, char *list, size_t size)
 
 }
 
+//删除扩展属性
 int fqd_removexattr(const char *path, const char *name)
 {
     int retstat = 0;
@@ -497,6 +496,10 @@ int fqd_removexattr(const char *path, const char *name)
 
 }
 
+/*
+ 打开目录
+ 这个方法应该检查，是否开放的操作允许打开这个操作
+*/
 int fqd_opendir(const char *path, struct fuse_file_info *fi)
 {
     DIR *dp;
@@ -517,7 +520,18 @@ int fqd_opendir(const char *path, struct fuse_file_info *fi)
     return retstat;
 }
 
-
+/*
+读取目录
+*
+* 这取代了旧的GETDIR（）接口。新的应用程序应该使用。
+*
+* 1.文件系统之间可以选择两种操作模式：
+* READDIR实施忽略偏移参数，并且传递给填充函数的零点偏移。
+* 填充函数将不会返回'1'（除非发生错误），
+* 那么整个目录是只读到单一READDIR操作。
+* 2.readdir的实施，使目录项偏移的轨道。它使用offset参数总是通过非零偏移填充函数。
+* 当缓冲区已满（或发生错误）填充函数将返回'1'。
+ */
 int fqd_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offset,struct fuse_file_info *fi)
 {
     int retstat = 0;
@@ -525,23 +539,21 @@ int fqd_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offse
     struct dirent *de;
 
     log_msg("\nfqd_readdir(path=\"%s\", buf=0x%08x, filler=0x%08x, offset=%lld, fi=0x%08x)\n",path, buf, filler, offset, fi);
-    // once again, no need for fullpath -- but note that I need to cast fi->fh
+    //再次重申，没必要fullpath，但是要注意，fi->fh
     dp = (DIR *) (uintptr_t) fi->fh;
 
-    // Every directory contains at least two entries: . and ..  If my
-    // first call to the system readdir() returns NULL I've got an
-    // error; near as I can tell, that's the only condition under
-    // which I can get an error from readdir()
+    //每个目录至少包含两个项目：
+    //如果我的第一个READDIR（）系统调用返回NULL我得到一个错误;
+
     de = readdir(dp);
     if (de == 0) {
         retstat = fqd_error("fqd_readdir readdir");
         return retstat;
     }
 
-    // This will copy the entire directory into the buffer.  The loop exits
-    // when either the system readdir() returns NULL, or filler()
-    // returns something non-zero.  The first case just means I've
-    // read the whole directory; the second means the buffer is full.
+    //这将整个目录复制到缓冲区。
+    //READDIR（）系统时返回NULL，或filter（）返回非零的东西，则退出循环。
+    //第一种情况下，仅仅意味着我读整个目录;第二意味着缓冲区已满。
     do {
         log_msg("calling filler with name %s\n", de->d_name);
         if (filler(buf, de->d_name, NULL, 0) != 0) {
@@ -553,6 +565,7 @@ int fqd_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offse
     return retstat;
 }
 
+//释放目录
 int fqd_releasedir(const char *path, struct fuse_file_info *fi)
 {
     int retstat = 0;
@@ -562,7 +575,12 @@ int fqd_releasedir(const char *path, struct fuse_file_info *fi)
     closedir((DIR *) (uintptr_t) fi->fh);
     return retstat;
 }
-
+/*
+ * 同步目录的内容
+ * 如果数据同步参数不为零，那么唯一的用户数据被刷新，
+ * 当一个用户要同步，而其恰恰是个目录。
+ */
+ 
 int fqd_fsyncdir(const char *path, int datasync, struct fuse_file_info *fi)
 {
     int retstat = 0;
@@ -572,17 +590,31 @@ int fqd_fsyncdir(const char *path, int datasync, struct fuse_file_info *fi)
     return retstat;
 }
 
+/*
+ * 初始化文件系统，返回值将作为私有数据从fuse——context传递到所有文件操作符，
+ * 并且作为destory（）方法的一个参数
+ */
+
 void *fqd_init(struct fuse_conn_info *conn)
 {
     log_msg("\nfqd_init()\n");
     return BB_DATA;
 }
 
+/*
+*清除文件系统
+*调用文献系统退出函数
+*/
 void fqd_destroy(void *userdata)
 {
     log_msg("\nfqd_destroy(userdata=0x%08x)\n", userdata);
 }
 
+/*
+ *检查文件访问许可
+ *如果"default_permissins"挂载选项
+ *这种方法不会被调用
+ */
 int fqd_access(const char *path, int mask)
 {
     int retstat = 0;

@@ -1,4 +1,4 @@
-//É¾³ıÀ©Õ¹ÊôĞÔ
+//åˆ é™¤æ‰©å±•å±æ€§
 int fqd_removexattr(const char *path, const char *name) {
 int retstat = 0;
     char fpath[PATH_MAX];
@@ -16,8 +16,8 @@ int retstat = 0;
 
 /*
  *
- ´ò¿ªÄ¿Â¼
- Õâ¸ö·½·¨Ó¦¸Ã¼ì²é£¬ÊÇ·ñ¿ª·ÅµÄ²Ù×÷ÔÊĞí´ò¿ªÕâ¸ö²Ù×÷
+ æ‰“å¼€ç›®å½•
+ è¿™ä¸ªæ–¹æ³•åº”è¯¥æ£€æŸ¥ï¼Œæ˜¯å¦å¼€æ”¾çš„æ“ä½œå…è®¸æ‰“å¼€è¿™ä¸ªæ“ä½œ
  */
 int fqd_opendir(const char *path, struct fuse_file_info *fi) {
  DIR *dp;

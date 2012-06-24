@@ -1,8 +1,8 @@
 
 /*
- ¸Ä±äÒ»¸ö´ò¿ªµÄÎÄ¼şµÄ´óĞ¡
- * Èç¹ûtruncation£¨£©ÔÚftruncate£¨£©ÎÄ¼şÏµÍ³ÖĞ±»µ÷ÓÃµÄ»°
- * ÕâÖÖ·½·¨½«±»µ÷ÓÃ¶ø²»µ÷ÓÃtruncate£¨£©¡£
+ æ”¹å˜ä¸€ä¸ªæ‰“å¼€çš„æ–‡ä»¶çš„å¤§å°
+ * å¦‚æœtruncationï¼ˆï¼‰åœ¨ftruncateï¼ˆï¼‰æ–‡ä»¶ç³»ç»Ÿä¸­è¢«è°ƒç”¨çš„è¯
+ * è¿™ç§æ–¹æ³•å°†è¢«è°ƒç”¨è€Œä¸è°ƒç”¨truncateï¼ˆï¼‰ã€‚
  */
 int fqd_ftruncate(const char *path, off_t offset, struct fuse_file_info *fi) {
 int retstat = 0;
