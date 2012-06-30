@@ -498,7 +498,6 @@ int fqd_removexattr(const char *path, const char *name)
 
 /*
  打开目录
- 这个方法应该检查，是否开放的操作允许打开这个操作
 */
 int fqd_opendir(const char *path, struct fuse_file_info *fi)
 {
@@ -522,9 +521,6 @@ int fqd_opendir(const char *path, struct fuse_file_info *fi)
 
 /*
 读取目录
-*
-* 这取代了旧的GETDIR（）接口。新的应用程序应该使用。
-*
 * 1.文件系统之间可以选择两种操作模式：
 * READDIR实施忽略偏移参数，并且传递给填充函数的零点偏移。
 * 填充函数将不会返回'1'（除非发生错误），
@@ -539,11 +535,10 @@ int fqd_readdir(const char *path, void *buf, fuse_fill_dir_t filler, off_t offse
     struct dirent *de;
 
     log_msg("\nfqd_readdir(path=\"%s\", buf=0x%08x, filler=0x%08x, offset=%lld, fi=0x%08x)\n",path, buf, filler, offset, fi);
-    //再次重申，没必要fullpath，但是要注意，fi->fh
+    //没必要fullpath，但是要fi->fh
     dp = (DIR *) (uintptr_t) fi->fh;
 
     //每个目录至少包含两个项目：
-    //如果我的第一个READDIR（）系统调用返回NULL我得到一个错误;
 
     de = readdir(dp);
     if (de == 0) {
@@ -602,8 +597,7 @@ void *fqd_init(struct fuse_conn_info *conn)
 }
 
 /*
-*清除文件系统
-*调用文献系统退出函数
+*清除文件系统,调用文件系统退出函数
 */
 void fqd_destroy(void *userdata)
 {
@@ -652,8 +646,6 @@ int fqd_create(const char *path, mode_t mode, struct fuse_file_info *fi)
 
 /*
  * 改变一个打开的文件的大小
- * 在这里如果truncation（）在ftruncate（）文件系统中被调用的话
- * 这个方法将被调用而不调用truncate（）。
  */
 int fqd_ftruncate(const char *path, off_t offset, struct fuse_file_info *fi)
 {
